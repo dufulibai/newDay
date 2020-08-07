@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cuit.smsb.Mapper.FrontWriteMapper">
+    <insert id="insertUser" keyProperty="userId" parameterType="com.cuit.smsb.Model.User" useGeneratedKeys="true" >
+        insert into user (name,enabled,username,password)
+        values (#{username},1,#{username},#{password})
+    </insert>
+
+    <insert id="insertUserRoleByUserId">
+        insert into user_role (userId,roleId)
+        values (#{userId},2)
+    </insert>
+
+    <insert id="insertOrders"  parameterType="java.util.List" >
+        insert into orders (day,hanWeekDay,month,schaNo,spaNo,staNo,tag,timeNode,weekDay,year,scha_price,spaName,order_id,pay_status,username,outdate)
+        values
+        <foreach collection="list" item="data" separator=",">
+            (#{data.day},
+            #{data.hanWeekDay},
+            #{data.month},
+            #{data.schaNo},
+            #{data.spaNo},
+            #{data.staNo},
+            #{data.tag},
+            #{data.timeNode},
+            #{data.weekDay},
+            #{data.year},
+            #{data.scha_price},
+            #{data.spaName},
+            #{data.order_id},
+            #{data.pay_status},
+            #{data.username},
+            #{data.outdate}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateOutdateOrder" parameterType="java.util.ArrayList">
+        update orders set outdate = '已过期'
+        where order_id in
+        <foreach collection="list" item="data" separator="," close=")" open="(">
+            #{data}
+        </foreach>
+    </update>
+</mapper>

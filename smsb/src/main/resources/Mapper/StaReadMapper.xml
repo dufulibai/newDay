@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cuit.smsb.Mapper.StaReadMapper">
+    <resultMap id="staInfoMap" type="com.cuit.smsb.Model.StaInfo">
+        <id column="staNo" property="staNo"/>
+        <result column="sta_name" property="sta_name"/>
+        <result column="sta_addr" property="sta_addr"/>
+        <result column="sta_phone" property="sta_phone"/>
+        <result column="sta_notice" property="sta_notice"/>
+        <result column="sta_createTime" property="sta_createTime"/>
+        <result column="sta_startDayTime" property="sta_startDayTime"/>
+        <result column="sta_endDayTime" property="sta_endDayTime"/>
+        <collection property="selectedTags" ofType="string">
+            <constructor><arg column="tagName"/></constructor>
+        </collection>
+    </resultMap>
+
+    <resultMap id="spaceInfo" type="com.cuit.smsb.Model.SpaceInfo">
+        <result column="tag" property="tag"/>
+        <result column="staNo" property="staNo"/>
+        <collection property="spaces" resultMap="spaceDetail"></collection>
+    </resultMap>
+    
+    <resultMap id="spaceDetail" type="com.cuit.smsb.Model.SpaceDetail">
+        <result column="spaNo" property="spaNo"></result>
+        <result column="schaNo" property="schaNo"></result>
+        <result column="spaName" property="spaName"></result>
+    </resultMap>
+
+    <select id="getTags" resultType="string">
+       select tagName from tag
+    </select>
+    <!--sta.staNo,sta_name,sta_addr,sta_phone,sta_notice,tagName-->
+    <select id="getAllStaInfo" resultMap="staInfoMap">
+        select *
+         from sta left join sta_tag on  sta.staNo = sta_tag.staNo
+    </select>
+
+    <select id="getAllScha" resultType="com.cuit.smsb.Model.SchaduleInfo">
+       select  schaNo ,
+     staNo ,
+     scha_name,
+     scha_startTime ,
+     scha_endTime ,
+     scha_priceTime ,
+     scha_price  from schadule where staNo = #{staNo}
+    </select>
+
+    <select id="getAllSpace" resultMap="spaceInfo">
+        select * from staspace where staNo = #{staNo}
+    </select>
+
+    <select id="getAllUsers" resultType="com.cuit.smsb.Model.User">
+        select * from user_role ur
+        inner join user on ur.userId = user.userId
+        inner join role on ur.roleId = role.roleId
+        where role.name = 'ROLE_user'
+    </select>
+</mapper>

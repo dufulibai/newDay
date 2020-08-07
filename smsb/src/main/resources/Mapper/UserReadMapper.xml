@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cuit.smsb.Mapper.UserReadMapper">
+
+  <select id="findByUsername" parameterType="string" resultType="com.cuit.smsb.Model.User">
+      select * from user where username = #{username}
+  </select>
+
+    <!--<select id="findMenuByUsername" parameterType="string" resultType="menu">-->
+        <!--select menu.*-->
+        <!--from-->
+             <!--user-->
+        <!--inner join user_role on user.userId = user_role.userId-->
+        <!--inner join menu_role on user_role.roleId = menu_role.roleId-->
+       <!--inner join menu on menu_role.mId =menu.mId-->
+        <!--where user.username = #{value};-->
+    <!--</select>-->
+
+    <select id="findRoleByUsername" parameterType="string" resultType="com.cuit.smsb.Model.Role">
+        select role.*
+        from
+             user
+        inner join user_role on user.userId = user_role.userId
+        inner join role on user_role.roleId = role.roleId
+        where user.username = #{value};
+    </select>
+
+</mapper>

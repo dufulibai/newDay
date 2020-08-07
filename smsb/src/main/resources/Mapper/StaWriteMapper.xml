@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cuit.smsb.Mapper.StaWriteMapper">
+
+    <insert id="insertStaInfo" keyProperty="staNo" useGeneratedKeys="true" parameterType="com.cuit.smsb.Model.StaInfo">
+        insert into sta (sta_name,sta_addr,sta_phone,sta_notice,sta_createTime,sta_startDayTime,sta_endDayTime)
+        values (#{sta_name}, #{sta_addr},#{sta_phone},#{sta_notice},#{sta_createTime},#{sta_startDayTime},#{sta_endDayTime})
+    </insert>
+
+    <insert id="insertNewTags">
+        insert into tag (tagName) values
+        <foreach collection="newTag" item="data" separator=",">
+            (#{data})
+        </foreach>
+    </insert>
+
+    <insert id="insertSelectedTags">
+        insert into sta_tag (staNo,tagName) values
+        <foreach collection="selectedTags" item="data" separator=",">
+            (#{staNo},#{data})
+        </foreach>
+    </insert>
+
+    <insert id="insertSchadule" keyProperty="schaNo" useGeneratedKeys="true" parameterType="java.util.List">
+        insert into schadule (staNo,scha_name,scha_startTime,scha_endTime,scha_priceTime,scha_price)
+        values
+        <foreach collection="list" item="data" separator=",">
+            (#{data.staNo},
+            #{data.scha_name},
+            #{data.scha_startTime},
+            #{data.scha_endTime},
+            #{data.scha_priceTime},
+            #{data.scha_price}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertSpaceInfo">
+        insert into staspace (staNo,schaNo,spaName,tag)
+        values
+        <foreach collection="list" item="data" separator=",">
+                <foreach collection="data.spaces" item="item" separator="," >
+                    (#{data.staNo},
+                    #{item.schaNo},
+                    #{item.spaName},
+                    #{data.tag})
+                </foreach>
+        </foreach>
+    </insert>
+
+    <delete id="deleteSpaData">
+        delete from staspace where spaNo = #{spaNo}
+    </delete>
+
+    <delete id="deleteSchaData">
+        delete from schadule where schaNo = #{schaNo}
+    </delete>
+
+
+    <delete id="pitchDelete" parameterType="string">
+        delete from schadule where schaNo in
+            <foreach item="item" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+
+    <delete id="pitchDeleteSpa" parameterType="string">
+        delete from staspace where spaNo in
+             <foreach collection="list" item="item" open="(" separator="," close=")">
+                 #{item}
+             </foreach>
+    </delete>
+
+    <update id="updateSchaData" parameterType="com.cuit.smsb.Model.SchaduleInfo">
+        update schadule
+        set scha_name = #{scha_name},scha_startTime=#{scha_startTime},scha_endTime=#{scha_endTime},
+        scha_priceTime=#{scha_priceTime},scha_price=#{scha_price}
+        where schaNo = #{schaNo}
+    </update>
+
+    <update id="updateSpaData" parameterType="java.util.Map">
+        update staspace
+        set tag = #{tag},schaNo=#{schaNo},spaName=#{spaName}
+        where spaNo=#{spaNo}
+    </update>
+
+    <update id="updateStaInfo" parameterType="com.cuit.smsb.Model.StaInfo">
+        update sta
+        set sta_name=#{sta_name},sta_addr=#{sta_addr},sta_phone=#{sta_phone},sta_notice=#{sta_notice},
+        sta_createTime=#{sta_createTime},sta_startDayTime=#{sta_startDayTime},sta_endDayTime=#{sta_endDayTime}
+        WHERE staNo=#{staNo}
+    </update>
+
+    <delete id="deleteOldSeleTagsStaTag" parameterType="string">
+        delete from sta_tag where tagName in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOldSeleTagsStaSpace" parameterType="string">
+        delete from staspace where tag in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteOldTag" parameterType="string">
+        delete from tag where tagName in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteStaBaseInfo">
+        delete from sta where staNo = #{staNo}
+    </delete>
+
+    <delete id="deleteStaTagByStaNo">
+        delete from sta_tag where staNo=#{staNo}
+    </delete>
+
+    <delete id="deleteStaspaceByStaNo">
+        delete from staspace where staNo=#{staNo}
+    </delete>
+
+    <delete id="deleteSchaByStaNo">
+        delete from schadule where staNo=#{staNo}
+    </delete>
+</mapper>
